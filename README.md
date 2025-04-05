@@ -1,70 +1,56 @@
-# Getting Started with Create React App
+# Assignment 14
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+# Set up React
+yarn install
+yarn create react-app portfolio
 
-## Available Scripts
+# edit the app file to show the content of the assignment on the website
+Edit src/app.js
 
-In the project directory, you can run:
+# write dockerfile
+# Use the official Node.js image as the base image
+FROM node:18-alpine AS build
 
-### `yarn start`
+# Set the working directory inside the container
+WORKDIR /bao_yuwei_final_site
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+# Copy the package.json and yarn.lock files
+COPY package.json yarn.lock ./
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+# Install the project dependencies
+RUN yarn install
 
-### `yarn test`
+# Copy the rest of the project files into the container
+COPY . .
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+# Builds application using the script from package.json file.
+RUN yarn build
 
-### `yarn build`
+# Expose the port 8083 that the app will run
+EXPOSE 8083
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+# Serve using Nginx
+FROM nginx:alpine AS production
+WORKDIR /bao_yuwei_final_site
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+COPY --from=build /bao_yuwei_final_site/build /usr/share/nginx/html
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+EXPOSE 80
 
-### `yarn eject`
+CMD ["nginx", "-g", "daemon off;"]
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+# build image
+docker build -t bao_yuwei_coding_assignment14 .
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+# build container on Port 5575 with correct name
+docker run -d -p 5575:80 --name bao_yuwei_coding_assignment14 bao_yuwei_coding_assignment14
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+# run container
+container runs successfully on port 5575
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
 
-## Learn More
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
 
-To learn React, check out the [React documentation](https://reactjs.org/).
 
-### Code Splitting
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
 
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `yarn build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
